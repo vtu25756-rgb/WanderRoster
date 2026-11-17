@@ -1,0 +1,264 @@
+<template>
+    <template lwc:if={isUserLoggedIn}>
+        <div class="slds-m-around_medium">
+            <template lwc:if={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+
+            <!-- Top Header Banner -->
+            <div class="portal-header slds-m-bottom_medium">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <span class="avatar-circle">{avatarInitials}</span>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2>Welcome back, {userName}</h2>
+                        <p>{userEmail} &bull; <span class="role-pill">{userRoleCategory}</span></p>
+                    </div>
+                </div>
+                <div>
+                    <lightning-button-icon 
+                        icon-name="utility:refresh" 
+                        variant="border-filled" 
+                        alternative-text="Refresh" 
+                        onclick={handleRefresh} 
+                        class="slds-m-right_x-small">
+                    </lightning-button-icon>
+                    <lightning-button 
+                        label="Logout" 
+                        variant="neutral" 
+                        icon-name="utility:logout" 
+                        onclick={handleLogout}>
+                    </lightning-button>
+                </div>
+            </div>
+
+            <!-- Operations Overview: ONLY Visible to Approvers (Managers & Finance) -->
+            <template lwc:if={isApprover}>
+                <div class="portal-card slds-m-bottom_medium">
+                    <div class="card-inner-header">
+                        <lightning-icon icon-name="standard:metrics" size="small" class="slds-m-right_small"></lightning-icon>
+                        <h3>Travel Operations Overview</h3>
+                    </div>
+                    <div class="slds-p-around_medium">
+                        <div class="slds-grid slds-wrap slds-gutters_small">
+                            <!-- Total Requests -->
+                            <div class="slds-col slds-size_1-1 slds-small-size_1-of-2 slds-medium-size_1-of-5 slds-m-bottom_small">
+                                <div class="metric-card">
+                                    <span class="metric-label">Total Requests</span>
+                                    <span class="metric-value">{totalRequestsCount}</span>
+                                </div>
+                            </div>
+
+                            <!-- No. of Employees -->
+                            <div class="slds-col slds-size_1-1 slds-small-size_1-of-2 slds-medium-size_1-of-5 slds-m-bottom_small">
+                                <div class="metric-card info">
+                                    <span class="metric-label">No. of Employees</span>
+                                    <span class="metric-value">{employeeCount}</span>
+                                </div>
+                            </div>
+
+                            <!-- Pending -->
+                            <div class="slds-col slds-size_1-1 slds-small-size_1-of-2 slds-medium-size_1-of-5 slds-m-bottom_small">
+                                <div class="metric-card warning">
+                                    <span class="metric-label">Pending</span>
+                                    <span class="metric-value">{pendingRequestsCount}</span>
+                                </div>
+                            </div>
+
+                            <!-- Amount Approved (INR) -->
+                            <div class="slds-col slds-size_1-1 slds-small-size_1-of-2 slds-medium-size_1-of-5 slds-m-bottom_small">
+                                <div class="metric-card success">
+                                    <span class="metric-label">Amount Approved</span>
+                                    <span class="metric-value-currency">
+                                        <lightning-formatted-number 
+                                            value={totalApprovedAmount} 
+                                            format-style="currency" 
+                                            currency-code="INR"
+                                            currency-display-symbol="symbol">
+                                        </lightning-formatted-number>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Total Budget Requested (INR) -->
+                            <div class="slds-col slds-size_1-1 slds-small-size_1-of-1 slds-medium-size_1-of-5 slds-m-bottom_small">
+                                <div class="metric-card neutral">
+                                    <span class="metric-label">Total Budget</span>
+                                    <span class="metric-value-currency">
+                                        <lightning-formatted-number 
+                                            value={totalBudgetAmount} 
+                                            format-style="currency" 
+                                            currency-code="INR"
+                                            currency-display-symbol="symbol">
+                                        </lightning-formatted-number>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Submission Form: Visible to Employees -->
+            <template lwc:if={isEmployeeView}>
+                <div class="portal-card slds-m-bottom_medium">
+                    <div class="card-inner-header">
+                        <lightning-icon icon-name="standard:travel_mode" size="small" class="slds-m-right_small"></lightning-icon>
+                        <h3>Submit New Travel Request</h3>
+                    </div>
+                    <div class="form-container">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                                <lightning-input 
+                                    label="Destination" 
+                                    placeholder="e.g. Hyderabad, TS" 
+                                    value={destination} 
+                                    onchange={handleDestinationChange} 
+                                    required>
+                                </lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                                <lightning-input 
+                                    type="date" 
+                                    label="Start Date" 
+                                    value={startDate} 
+                                    onchange={handleStartDateChange} 
+                                    required>
+                                </lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                                <lightning-input 
+                                    type="date" 
+                                    label="End Date" 
+                                    value={endDate} 
+                                    onchange={handleEndDateChange} 
+                                    required>
+                                </lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                                <lightning-input 
+                                    type="number" 
+                                    label="Estimated Cost (₹)" 
+                                    placeholder="25000" 
+                                    value={estimatedCost} 
+                                    onchange={handleCostChange} 
+                                    required>
+                                </lightning-input>
+                            </div>
+                            <div class="slds-col slds-size_1-1 slds-medium-size_8-of-12 slds-m-bottom_small">
+                                <lightning-textarea 
+                                    label="Purpose of Travel" 
+                                    placeholder="Client onsite engagement, project kickoff..." 
+                                    value={purpose} 
+                                    onchange={handlePurposeChange} 
+                                    required>
+                                </lightning-textarea>
+                            </div>
+                        </div>
+                        <div class="slds-text-align_right slds-m-top_small">
+                            <lightning-button 
+                                label="Submit Travel Request" 
+                                variant="brand" 
+                                icon-name="utility:send" 
+                                onclick={handleSubmitRequest}>
+                            </lightning-button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Table of Requests -->
+            <div class="portal-card">
+                <div class="card-inner-header">
+                    <lightning-icon icon-name="standard:service_territory_location" size="small" class="slds-m-right_small"></lightning-icon>
+                    <h3>{cardTitle}</h3>
+                </div>
+
+                <template lwc:if={hasRequests}>
+                    <div class="table-container">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>Destination</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Purpose</th>
+                                    <th>Cost</th>
+                                    <template lwc:if={isApprover}>
+                                        <th>Requested By</th>
+                                    </template>
+                                    <th>Status</th>
+                                    <template lwc:if={isApprover}>
+                                        <th class="slds-text-align_center">Decision Actions</th>
+                                    </template>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={pendingList} for:item="req">
+                                    <tr key={req.id}>
+                                        <td class="bold-text">{req.destination}</td>
+                                        <td>
+                                            <lightning-formatted-date-time value={req.startDate}></lightning-formatted-date-time>
+                                        </td>
+                                        <td>
+                                            <lightning-formatted-date-time value={req.endDate}></lightning-formatted-date-time>
+                                        </td>
+                                        <td>{req.purpose}</td>
+                                        <td>
+                                            <lightning-formatted-number 
+                                                value={req.estimatedCost} 
+                                                format-style="currency" 
+                                                currency-code="INR"
+                                                currency-display-symbol="symbol">
+                                            </lightning-formatted-number>
+                                        </td>
+                                        <template lwc:if={isApprover}>
+                                            <td class="bold-text">{req.submitterName}</td>
+                                        </template>
+                                        <td>
+                                            <span class={req.badgeClass}>{req.status}</span>
+                                        </td>
+                                        <template lwc:if={isApprover}>
+                                            <td class="slds-text-align_center">
+                                                <div class="action-btn-group">
+                                                    <button 
+                                                        class="action-btn btn-accept" 
+                                                        data-id={req.id} 
+                                                        data-action="Accept" 
+                                                        onclick={handleDecision}>
+                                                        Accept
+                                                    </button>
+                                                    <button 
+                                                        class="action-btn btn-pending" 
+                                                        data-id={req.id} 
+                                                        data-action="Pending" 
+                                                        onclick={handleDecision}>
+                                                        Pending
+                                                    </button>
+                                                    <button 
+                                                        class="action-btn btn-reject" 
+                                                        data-id={req.id} 
+                                                        data-action="Reject" 
+                                                        onclick={handleDecision}>
+                                                        Reject
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </template>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </div>
+                </template>
+
+                <template lwc:else>
+                    <div class="empty-state">
+                        <p>No travel requests found.</p>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,70 @@
+<template>
+    <div class="guardian-container">
+        <template lwc:if={record}>
+            <!-- Duplicate Flag Banner -->
+            <template lwc:if={potentialDuplicate}>
+                <div class="slds-notify slds-notify_alert slds-alert_warning slds-m-bottom_small banner-flag" role="alert">
+                    <span class="slds-assistive-text">warning</span>
+                    <lightning-icon icon-name="utility:warning" size="x-small" class="slds-m-right_x-small"></lightning-icon>
+                    <h2>Potential duplicate flagged for this expense claim.</h2>
+                </div>
+            </template>
+
+            <!-- 5 Cards Row -->
+            <div class="slds-grid slds-wrap slds-gutters_small">
+                
+                <!-- 1. Expense Number -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-of-5 slds-m-bottom_small">
+                    <div class="metric-card">
+                        <span class="metric-label">Exp Number</span>
+                        <span class="metric-value">{expenseNumber}</span>
+                    </div>
+                </div>
+
+                <!-- 2. Travel Request -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-of-5 slds-m-bottom_small">
+                    <div class="metric-card info-card">
+                        <span class="metric-label">Travel Request</span>
+                        <span class="metric-value-highlight">{travelRequestNumber}</span>
+                    </div>
+                </div>
+
+                <!-- 3. Expense Category -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-of-5 slds-m-bottom_small">
+                    <div class="metric-card category-card">
+                        <span class="metric-label">Category</span>
+                        <span class="metric-value-category">{expenseCategory}</span>
+                    </div>
+                </div>
+
+                <!-- 4. Expense Amount -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-of-5 slds-m-bottom_small">
+                    <div class="metric-card success-card">
+                        <span class="metric-label">Expense Amount</span>
+                        <span class="metric-value-currency">
+                            <lightning-formatted-number 
+                                value={amount} 
+                                format-style="currency" 
+                                currency-code="INR">
+                            </lightning-formatted-number>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 5. Expense Date -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_1-of-5 slds-m-bottom_small">
+                    <div class="metric-card">
+                        <span class="metric-label">Expense Date</span>
+                        <span class="metric-value">{expenseDate}</span>
+                    </div>
+                </div>
+
+            </div>
+        </template>
+        <template lwc:else>
+            <div class="slds-p-around_medium slds-text-align_center">
+                <lightning-spinner alternative-text="Loading claim details..." size="small"></lightning-spinner>
+            </div>
+        </template>
+    </div>
+</template>

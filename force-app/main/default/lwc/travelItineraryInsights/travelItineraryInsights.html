@@ -1,0 +1,76 @@
+<template>
+    <div class="insight-container">
+        <template lwc:if={hasData}>
+            <!-- Header -->
+            <div class="insight-header">
+                <div class="header-title-group">
+                    <lightning-icon icon-name="standard:travel_mode" size="small" class="slds-m-right_x-small"></lightning-icon>
+                    <h3>WanderRoster Itinerary & Expense Analytics</h3>
+                </div>
+                <span class={badgeClass}>{insights.status}</span>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="slds-grid slds-wrap slds-gutters_small slds-p-around_medium">
+                <!-- Trip Duration -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                    <div class="metric-card">
+                        <span class="metric-label">Trip Duration</span>
+                        <span class="metric-value">{insights.totalDays} Days</span>
+                        <span class="metric-sub">{insights.startDate} to {insights.endDate}</span>
+                    </div>
+                </div>
+
+                <!-- Daily Spend Rate -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                    <div class="metric-card info">
+                        <span class="metric-label">Daily Spend Rate</span>
+                        <span class="metric-value-currency">
+                            <lightning-formatted-number 
+                                value={insights.dailyBurnRate} 
+                                format-style="currency" 
+                                currency-code="INR">
+                            </lightning-formatted-number>
+                        </span>
+                        <span class="metric-sub">Average per day</span>
+                    </div>
+                </div>
+
+                <!-- Replaced: Employee Name Card -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_4-of-12 slds-m-bottom_small">
+                    <div class="metric-card success">
+                        <span class="metric-label">Employee</span>
+                        <span class="metric-value-text">{insights.submitterName}</span>
+                        <span class="metric-sub">Travel Request Owner</span>
+                    </div>
+                </div>
+
+                <!-- Total Allocated Expense -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_6-of-12">
+                    <div class="metric-card neutral">
+                        <span class="metric-label">Total Allocated Expense</span>
+                        <span class="metric-value-currency large">
+                            <lightning-formatted-number 
+                                value={insights.estimatedCost} 
+                                format-style="currency" 
+                                currency-code="INR">
+                            </lightning-formatted-number>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Target Destination -->
+                <div class="slds-col slds-size_1-1 slds-medium-size_6-of-12">
+                    <div class="metric-card destination-card">
+                        <span class="metric-label">Target Destination</span>
+                        <span class="metric-value-text">{insights.destination}</span>
+                        <span class="metric-sub">Verified corporate travel route</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template lwc:elseif={error}>
+            <div class="slds-p-around_medium slds-text-color_error">{error}</div>
+        </template>
+    </div>
+</template>

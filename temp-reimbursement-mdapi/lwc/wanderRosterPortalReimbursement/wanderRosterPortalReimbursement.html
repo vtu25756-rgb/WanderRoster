@@ -1,0 +1,134 @@
+<template>
+    <!-- RENDER ONLY FOR EMPLOYEES: Managers will not see this card -->
+    <template lwc:if={isEmployee}>
+        <div class="portal-card">
+            <div class="card-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                <div class="slds-media slds-media_center">
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name="custom:custom41" size="small"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="title">Submit Reimbursement Claim</h2>
+                        <p class="subtitle">Log trip expenses against your approved itineraries</p>
+                    </div>
+                </div>
+            </div>
+
+            <template lwc:if={isLoading}>
+                <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+            </template>
+
+            <div class="slds-grid slds-wrap slds-gutters_medium slds-p-around_medium">
+                <!-- FORM: Employee Entry -->
+                <div class="slds-col slds-size_1-1 slds-large-size_4-of-12 slds-m-bottom_medium">
+                    <div class="form-container">
+                        <h3 class="form-heading">New Expense Entry</h3>
+
+                        <lightning-combobox
+                            name="travelRequest"
+                            label="Select Travel Request"
+                            value={selectedTravelId}
+                            options={travelOptions}
+                            onchange={handleTravelChange}
+                            placeholder="Choose your trip"
+                            required>
+                        </lightning-combobox>
+
+                        <lightning-combobox
+                            name="category"
+                            label="Expense Category"
+                            value={category}
+                            options={categoryOptions}
+                            onchange={handleCategoryChange}
+                            required>
+                        </lightning-combobox>
+
+                        <lightning-input 
+                            type="number" 
+                            formatter="currency" 
+                            step="0.01" 
+                            label="Amount (₹)" 
+                            value={amount} 
+                            onchange={handleAmountChange} 
+                            required>
+                        </lightning-input>
+
+                        <lightning-input 
+                            type="date" 
+                            label="Expense Date" 
+                            value={expenseDate} 
+                            onchange={handleDateChange} 
+                            required>
+                        </lightning-input>
+
+                        <lightning-textarea 
+                            label="Remarks / Bill Details" 
+                            placeholder="e.g. Flight ticket, cab receipt, hotel invoice" 
+                            value={description} 
+                            onchange={handleDescriptionChange}>
+                        </lightning-textarea>
+
+                        <button class="primary-btn slds-m-top_medium" onclick={handleSubmitExpense}>
+                            Submit Reimbursement
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONTEXTUAL EXPENSES: Displayed ONLY for the Selected Request -->
+                <div class="slds-col slds-size_1-1 slds-large-size_8-of-12">
+                    <div class="history-container">
+                        <div class="slds-grid slds-grid_align-spread slds-p-bottom_small">
+                            <div>
+                                <h3 class="form-heading">Expenses For Selected Request</h3>
+                                <p class="sub-heading-text" if:true={selectedRequestLabel}>
+                                    Showing claims linked strictly to: <strong>{selectedRequestLabel}</strong>
+                                </p>
+                            </div>
+                            <span class="count-badge">{expenses.length} claims</span>
+                        </div>
+
+                        <template lwc:if={expenses.length}>
+                            <div class="table-container">
+                                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                    <thead>
+                                        <tr class="slds-line-height_reset">
+                                            <th scope="col"><div class="slds-truncate">Expense #</div></th>
+                                            <th scope="col"><div class="slds-truncate">Category</div></th>
+                                            <th scope="col"><div class="slds-truncate">Date</div></th>
+                                            <th scope="col"><div class="slds-truncate">Amount</div></th>
+                                            <th scope="col"><div class="slds-truncate">Status</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template for:each={expenses} for:item="exp">
+                                            <tr key={exp.id}>
+                                                <td><div class="slds-truncate font-semibold">{exp.name}</div></td>
+                                                <td><div class="slds-truncate">{exp.category}</div></td>
+                                                <td><div class="slds-truncate">{exp.expenseDate}</div></td>
+                                                <td>
+                                                    <div class="slds-truncate font-bold">
+                                                        <lightning-formatted-number 
+                                                            value={exp.amount} 
+                                                            format-style="currency" 
+                                                            currency-code="INR">
+                                                        </lightning-formatted-number>
+                                                    </div>
+                                                </td>
+                                                <td><span class={exp.badgeClass}>{exp.status}</span></td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <div class="empty-state">
+                                No reimbursement claims filed under this specific travel request yet.
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</template>

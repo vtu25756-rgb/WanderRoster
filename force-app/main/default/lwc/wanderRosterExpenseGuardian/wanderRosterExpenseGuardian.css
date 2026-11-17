@@ -1,0 +1,71 @@
+.guardian-container {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.banner-flag {
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.metric-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+}
+
+.info-card {
+    background: #f0f9ff;
+    border-left: 4px solid #0284c7;
+}
+
+.category-card {
+    background: #faf5ff;
+    border-left: 4px solid #9333ea;
+}
+
+.success-card {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+}
+
+.metric-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.25rem;
+}
+
+.metric-value {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.metric-value-highlight {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0369a1;
+}
+
+.metric-value-category {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #7e22ce;
+}
+
+.metric-value-currency {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #15803d;
+}
